@@ -1,0 +1,34 @@
+# sources.example.yml — TEMPLATE for the pull skill's source/channel selection.
+#
+# Your REAL, populated config lives at ~/brain/config/sources.yml — that file
+# holds personal data (your channels, people, DMs) and is NOT committed. This
+# example ships in the repo as the schema to copy from. The bootstrap script
+# copies this to ~/brain/config/sources.yml on first run; you then edit it.
+#
+# Channels are edited here BY NAME for readability, but resolve to stable Slack
+# IDs internally (names change, IDs don't), so renames don't break your config.
+#
+# Replace the placeholder values below with your real selection.
+
+slack:
+  window_days: 14                  # default look-back per pull (days)
+  channels:
+    include:                       # channels to synthesize
+      - "#example-channel"         # simple form: just the name
+      - { name: "#incidents", priority: high, window_days: 30 }
+                                   # object form: per-channel overrides
+                                   #   priority:    high | normal | low (affects brief ranking)
+                                   #   window_days: override the default look-back for this channel
+    ignore: ["#random", "#watercooler"]   # known-noise channels; never pulled, never re-proposed
+  dms:
+    include: true                  # pull direct messages
+    # people: ["Person A", "Person B"]   # optional: scope DMs to specific people
+  mentions: true                   # pull @-mentions of you anywhere, incl. unwatched channels
+  discovery:
+    enabled: true                  # diff your channel memberships against include ∪ ignore
+    queue: "signals/new-channels.md"   # append newly-discovered memberships here for review
+                                       # (proposes only — never auto-adds to include)
+
+calendar:
+  window_days: 14                  # default look-back/look-ahead for events (days)
+  calendars: ["primary"]           # which Google calendars to read

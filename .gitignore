@@ -1,0 +1,35 @@
+# --- OS cruft ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+
+# --- Editor / IDE directories ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.cursor/
+
+# --- Scratchpad / local working files ---
+scratchpad/
+.scratch/
+*.tmp
+
+# --- Secrets / local env ---
+.env
+.env.*
+*.local
+secrets/
+*.key
+*.pem
+
+# NOTE: ~/brain and ~/sources (the synthesis and immutable raw layers) live
+# OUTSIDE this repo, in the user's home directory. They are personal data and
+# are never part of this repository — nothing to ignore here, just a reminder.
+
+# The populated config (~/brain/config/sources.yml) is personal data and lives
+# outside the repo. We DO ship the template below, so do NOT ignore it:
+!config/sources.example.yml
