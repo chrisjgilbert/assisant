@@ -36,8 +36,9 @@ Then work through `benchmark/questions.md`, scoring in the table in
 once that passes is it worth doing the full connector setup below.
 
 > The sample brain is fictional (Northwind / Billing Squad). If you'd rather not
-> mix it into a `~/chief-of-staff/brain` you'll use for real, run this against throwaway dirs:
-> `BRAIN_DIR=/tmp/brain SOURCES_DIR=/tmp/sources` in front of each command.
+> mix it into a `~/chief-of-staff` you'll use for real, run this against a
+> throwaway location: put `COS_ROOT=/tmp/cos-test` in front of each command
+> (relocates both `brain/` and `sources/` together).
 
 ---
 
