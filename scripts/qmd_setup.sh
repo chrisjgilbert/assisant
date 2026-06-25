@@ -113,10 +113,12 @@ require_qmd() {
 # double-adding by grepping that config for the collection name first; if the
 # CLI errors because the collection already exists we treat that as success too.
 #
-# VERIFY: exact flag for the path/name/glob. Best-known form:
-#   qmd collection add <path> --name <name> [--glob '<pattern>' ...]
-# Some versions may use `qmd add`, positional name, or a single comma-separated
-# --globs. Adjust here if `qmd collection --help` differs.
+# Per the qmd README the documented form is:
+#   qmd collection add <path> --name <name> --mask '<glob>'
+# (the flag is --mask, NOT --glob; the glob may use brace sets via picomatch).
+# Collections can equivalently be declared in ~/.config/qmd/index.yml under a
+# `collections:` map with `path:` / `pattern:` keys. VERIFY exact flags with
+# `qmd collection --help` on first run.
 # --------------------------------------------------------------------------- #
 add_collection() {
   local name="$1"; shift
@@ -134,11 +136,11 @@ add_collection() {
     return 0
   fi
 
-  # Build the glob args. If none given, qmd uses its defaults.
+  # Build the mask args (one --mask per glob). If none given, qmd defaults to **/*.md.
   local glob_args=()
   local g
   for g in "${globs[@]:-}"; do
-    [ -n "$g" ] && glob_args+=(--glob "$g")
+    [ -n "$g" ] && glob_args+=(--mask "$g")
   done
 
   log "  Adding collection '$name' -> $path ${glob_args[*]:-}"
@@ -162,14 +164,18 @@ cmd_init() {
   add_collection "$BRAIN_COLLECTION" "$BRAIN_DIR" '**/*.md'
 
   # SECONDARY: immutable raw. Slack lands as .json (+ rendered .md); calendar
-  # as .md. Index both extensions.
-  add_collection "$SOURCES_COLLECTION" "$SOURCES_DIR" '**/*.md' '**/*.json'
+  # as .md. One brace-glob mask covers both (picomatch supports {…}).
+  add_collection "$SOURCES_COLLECTION" "$SOURCES_DIR" '**/*.{md,json}'
 
-  log "Building embeddings (local EmbeddingGemma)..."
-  # VERIFY: `qmd embed` is the documented embed command; some versions may
-  # scan+embed in one step or need an explicit `qmd index`/`qmd scan` first.
+  # Two-step build per the qmd README: `qmd update` scans the collections and
+  # builds the keyword (FTS) index; `qmd embed` then generates vector embeddings
+  # (local EmbeddingGemma). The scan step is required before embedding.
+  log "Scanning + building keyword index (qmd update)..."
+  qmd update
+  log "Building embeddings (qmd embed, local EmbeddingGemma)..."
   qmd embed
 
+  # `qmd query` = hybrid (BM25 + vector + rerank). Also: qmd search / qmd vsearch.
   log "init complete. Try:  qmd query 'what did I decide about X'"
 }
 
@@ -178,10 +184,10 @@ cmd_init() {
 # --------------------------------------------------------------------------- #
 cmd_reindex() {
   require_qmd
-  log "Re-embedding collections after changes..."
-  # NOTE: depending on qmd version, `qmd embed` may only embed NEW/CHANGED docs
-  # automatically, or may require an explicit rescan of collection paths first.
-  # VERIFY whether a `qmd scan`/`qmd index` step is needed; if so, add it here.
+  log "Re-scanning + re-embedding collections after changes..."
+  # `qmd update` rescans collections and refreshes the keyword index; `qmd embed`
+  # then (re-)embeds new/changed chunks. Run update first so new files are seen.
+  qmd update
   qmd embed
   log "reindex complete."
 }
