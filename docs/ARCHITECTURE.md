@@ -151,6 +151,38 @@ Keeping raw at a separate trust level (a sibling directory and a separate
 collection) also means the system can reason about "synthesized claim" vs "raw
 source material" without conflating them.
 
+### QMD vs navigation-only retrieval (what QMD adds over Karpathy)
+
+Strictly, Karpathy's LLM Wiki has **no QMD-equivalent**. Its retrieval is
+*navigation*: the LLM reads the curated `index.md`, then opens the pages it points
+to and follows cross-references. The bet is that good synthesis makes finding things
+trivial — retrieval is a side-effect of the wiki being well-organized. That works
+while the wiki is coherent and small enough to navigate, but its recall is hostage
+to the index: anything **not yet synthesized, mis-filed, or un-cross-referenced is
+invisible**, and the **raw layer is effectively unsearchable**.
+
+QMD is the search layer we add *underneath* the synthesis layer so navigation
+degrades gracefully at scale instead of silently losing recall:
+
+| Concern | Karpathy (navigate only) | With QMD (navigate + search) |
+|---|---|---|
+| Recall safety net | Misses anything the index omits | Finds mis-filed / un-linked / not-yet-synthesized content |
+| Raw layer | Practically unsearchable | Query raw directly; **verify a synthesized claim against its cited source** |
+| Scale | LLM loads index + pages into context | One cheap local query narrows candidates first |
+| Cost / latency | Whole pages into context | Targeted chunk retrieval |
+| Freshness gap | Only ingested content is findable | Can search raw *before* ingestion catches up |
+
+The raw-verification row is the one that matters most here: because QMD also indexes
+the immutable raw, we can always check a brain claim against the snapshot it cites —
+the concrete defense against confident-but-stale synthesis hardening into "fact."
+
+What QMD explicitly does **not** do: synthesize, cross-reference, resolve
+contradictions, or compound. It finds chunks; it does not maintain a worldview. The
+**brain is the product; QMD is plumbing.** Karpathy could assume direct filesystem
+reading of a small wiki; we run in Claude Code/Cowork over a brain meant to grow for
+years, so we add robust retrieval beneath the synthesis — while keeping synthesis
+firmly on top (navigation first, search as fallback).
+
 ---
 
 ## 5. Skill / script / sub-agent taxonomy
