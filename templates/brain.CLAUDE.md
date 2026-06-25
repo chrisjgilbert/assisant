@@ -1,23 +1,23 @@
 <!--
-  This file is copied to ~/brain/CLAUDE.md by the bootstrap script.
+  This file is copied to ~/chief-of-staff/brain/CLAUDE.md by the bootstrap script.
   It is the SCHEMA layer (Karpathy layer 3): the operating manual for any
   Claude / Cowork session working ON the brain. It governs the brain ONLY —
   the repo has its own separate CLAUDE.md governing the behaviour/scaffolding.
-  Read this in full before reading, writing, or regenerating anything in ~/brain.
+  Read this in full before reading, writing, or regenerating anything in ~/chief-of-staff/brain.
 -->
 
-# CLAUDE.md — operating manual for the brain (`~/brain/`)
+# CLAUDE.md — operating manual for the brain (`~/chief-of-staff/brain/`)
 
 You are operating on a personal "chief of staff" brain built on Karpathy's
 LLM-Wiki pattern: **compounding, LLM-maintained synthesis over immutable raw
 sources.** Three layers exist; keep them strictly separate:
 
-1. **Raw** — `~/sources/` (OUTSIDE this dir): immutable connector snapshots
+1. **Raw** — `~/chief-of-staff/sources/` (OUTSIDE this dir): immutable connector snapshots
    (`slack/`, `calendar/`). Read-only. Nothing edits raw after it lands.
-2. **Brain** — `~/brain/` (here): synthesis + human goals (this dir).
+2. **Brain** — `~/chief-of-staff/brain/` (here): synthesis + human goals (this dir).
 3. **Behaviour** — the `assisant/` repo: skills/scripts/templates. Not here.
 
-## Directory map of `~/brain/`
+## Directory map of `~/chief-of-staff/brain/`
 
 ```
 CLAUDE.md            # this file — the schema/operating manual
@@ -47,11 +47,11 @@ it and edits goals by hand. Propose; never write.
 Every factual line in a `context/` page (or any synthesis) is followed by:
 
 ```
-> source: <path under ~/sources> @ <YYYY-MM-DD>
+> source: <path under ~/chief-of-staff/sources> @ <YYYY-MM-DD>
 ```
 
 e.g. `> source: slack/eng-product/2026-06-20.json @ 2026-06-20`. The path is
-relative to `~/sources/`; the date is when that raw was captured. A claim with
+relative to `~/chief-of-staff/sources/`; the date is when that raw was captured. A claim with
 no citation does not belong in the brain — drop it or go find its source.
 
 ### 3. Channel discovery proposes, never auto-subscribes
@@ -73,7 +73,7 @@ Synthesis goes stale because raw connectors mutate. Defend it:
 - Every `context/` page carries `last synthesized: <date>` and a source-coverage
   note. Check these before trusting a page.
 - When a page is stale or contradicts newer raw, **regenerate it from
-  `~/sources/`** — do NOT hand-patch individual claims onto stale synthesis.
+  `~/chief-of-staff/sources/`** — do NOT hand-patch individual claims onto stale synthesis.
   Re-derivation from raw is what keeps provenance honest.
 - After regenerating, update the page's `last synthesized` date, update the
   matching row in `index.md`, and append an `ingest` line to `log.md`.
@@ -103,7 +103,7 @@ ones. They are the audit trail.
 ## Standard workflow on a run
 
 1. Read `index.md` (and this file) before doing anything.
-2. If pulling: connector → write immutable raw to `~/sources/` → then synthesize
+2. If pulling: connector → write immutable raw to `~/chief-of-staff/sources/` → then synthesize
    from raw. Append discovered memberships to `signals/new-channels.md`.
 3. If synthesizing: derive from raw, cite every claim, update the page's
    freshness, update `index.md`, append to `log.md`.

@@ -1,7 +1,7 @@
 {
   "name": "chief-of-staff",
   "version": "0.1.0",
-  "description": "Personal chief-of-staff assistant built on Karpathy's LLM-Wiki pattern: connectors fetch into an immutable raw layer (~/sources/), then compounding LLM-maintained synthesis lands in the brain (~/brain/). Skills are auto-discovered from skills/.",
+  "description": "Personal chief-of-staff assistant built on Karpathy's LLM-Wiki pattern: connectors fetch into an immutable raw layer (~/chief-of-staff/sources/), then compounding LLM-maintained synthesis lands in the brain (~/chief-of-staff/brain/). Skills are auto-discovered from skills/.",
   "author": {
     "name": "Chris Gilbert",
     "email": "chris@chrisgilbert.dev"

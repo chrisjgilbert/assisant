@@ -4,7 +4,7 @@
   HUMAN-OWNED. Ingestion never writes here; proposed changes go to
   signals/recalibration.md for you to review and apply by hand.
 
-  Copied into ~/brain/goals/weightings.md by the bootstrap script, then edited.
+  Copied into ~/chief-of-staff/brain/goals/weightings.md by the bootstrap script, then edited.
   This file encodes YOUR prioritisation JUDGEMENT as concrete, ordered rules so
   the daily brief can rank competing demands the way you actually would. The
   goal.*.md files say what matters; THIS file says what beats what when two

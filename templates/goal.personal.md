@@ -4,7 +4,7 @@
   HUMAN-OWNED. Ingestion never writes here; proposed changes go to
   signals/recalibration.md for you to review and apply by hand.
 
-  Copied into ~/brain/goals/personal.md by the bootstrap script, then filled in.
+  Copied into ~/chief-of-staff/brain/goals/personal.md by the bootstrap script, then filled in.
   This is your own level — your role, where you're heading, and what winning
   looks like this quarter. The brief uses this to weigh personal growth/visibility
   against team and company demands. Replace every <FILL IN ...> marker.

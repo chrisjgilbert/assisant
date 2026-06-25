@@ -4,7 +4,7 @@
   HUMAN-OWNED. Ingestion never writes here; proposed changes go to
   signals/recalibration.md for you to review and apply by hand.
 
-  Copied into ~/brain/goals/team.md by the bootstrap script, then filled in.
+  Copied into ~/chief-of-staff/brain/goals/team.md by the bootstrap script, then filled in.
   This is your product/engineering team's level — the objectives the brief
   should weigh day-to-day work against. Replace every <FILL IN ...> marker.
 -->

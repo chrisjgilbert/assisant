@@ -13,34 +13,34 @@ inferred. Optionally compound: when an answer is durable and reusable, offer
 (only with the user's agreement) to file it back as a new context topic page.
 
 ## Hard guardrails (read first)
-- **Read order is load-bearing:** `~/brain/index.md` FIRST, then QMD search of
+- **Read order is load-bearing:** `~/chief-of-staff/brain/index.md` FIRST, then QMD search of
   the brain (PRIMARY collection), then raw (SECONDARY) only as backup. Do NOT
   jump straight to query-time RAG over raw — lean on the synthesized brain.
 - **Read-mostly.** The ONLY thing this skill may write is a new
-  `~/brain/context/topics/<topic>.md` page, and ONLY when the user explicitly
-  agrees. It may also append a `~/brain/log.md` line when it does so.
-- **NEVER write `~/brain/goals/`**, never modify `~/sources/`, never overwrite
+  `~/chief-of-staff/brain/context/topics/<topic>.md` page, and ONLY when the user explicitly
+  agrees. It may also append a `~/chief-of-staff/brain/log.md` line when it does so.
+- **NEVER write `~/chief-of-staff/brain/goals/`**, never modify `~/chief-of-staff/sources/`, never overwrite
   existing context pages (this skill creates new topic pages, it does not patch
   others — that's `ingest`'s job).
 - **Cite everything** with the exact form
-  `> source: <path under ~/sources> @ <YYYY-MM-DD>`. Separate evidenced claims
+  `> source: <path under ~/chief-of-staff/sources> @ <YYYY-MM-DD>`. Separate evidenced claims
   from inferences and label inferences as such.
 - **No confabulation.** If the brain + search don't support an answer, say what's
   missing rather than inventing.
 
 ## Inputs it reads
-- `~/brain/index.md` — the curated catalogue; consult first to find the right
+- `~/chief-of-staff/brain/index.md` — the curated catalogue; consult first to find the right
   pages.
-- `~/brain/context/*` — synthesis pages (slack.md, projects/, people/, topics/).
-- `~/brain/daily/YYYY-MM-DD.md` and `~/brain/briefs/YYYY-MM-DD.md` — for
+- `~/chief-of-staff/brain/context/*` — synthesis pages (slack.md, projects/, people/, topics/).
+- `~/chief-of-staff/brain/daily/YYYY-MM-DD.md` and `~/chief-of-staff/brain/briefs/YYYY-MM-DD.md` — for
   "what did I do" / "over time" questions and for tracking unprogressed threads.
 - **QMD search (fallback):** the MCP daemon — brain collection PRIMARY, raw
   collection SECONDARY — to retrieve specifics the curated pages don't surface.
-- `~/sources/` raw — only when a claim needs to be pinned to its primary source
+- `~/chief-of-staff/sources/` raw — only when a claim needs to be pinned to its primary source
   for citation.
 
 ## Procedure
-1. **Read the catalogue.** Read `~/brain/index.md` to locate the pages most
+1. **Read the catalogue.** Read `~/chief-of-staff/brain/index.md` to locate the pages most
    relevant to the question before searching.
 2. **Pull from curated synthesis.** Read the relevant `context/` pages (and
    `daily/` / `briefs/` for time-range or recall questions). Prefer these over
@@ -57,15 +57,15 @@ inferred. Optionally compound: when an answer is durable and reusable, offer
    … / Inferred: …"). Note gaps or staleness honestly.
 6. **Offer to compound (optional).** If the answer is durable and reusable (not a
    one-off), ASK the user whether to file it back as
-   `~/brain/context/topics/<topic>.md` (Karpathy: explorations compound). Only on
+   `~/chief-of-staff/brain/context/topics/<topic>.md` (Karpathy: explorations compound). Only on
    a clear yes:
    - write the page with a context header and citations (see format),
-   - and append a `~/brain/log.md` line.
+   - and append a `~/chief-of-staff/brain/log.md` line.
    Do NOT write it unprompted.
 
 ## Output (only when the user agrees to compound)
 
-### New topic page — `~/brain/context/topics/<topic>.md`
+### New topic page — `~/chief-of-staff/brain/context/topics/<topic>.md`
 ```markdown
 ---
 title: <Topic> — answer page
@@ -85,7 +85,7 @@ origin: query   # filed from a query answer, with the user's agreement
 > Note: after creating a topic page, remind the user it should be re-indexed
 > (`scripts/qmd_setup.sh reindex`) and ideally folded into `index.md` by `ingest`.
 
-### Log line — append to `~/brain/log.md` (only when a page was filed)
+### Log line — append to `~/chief-of-staff/brain/log.md` (only when a page was filed)
 ```markdown
 ## [2026-06-25] query | filed context/topics/v1-importer-decision.md (user-approved)
 ```

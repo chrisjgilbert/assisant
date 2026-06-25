@@ -7,8 +7,8 @@ system is built on sand.
 
 - **Sample data:** `../samples/` — a self-contained fictional scenario (Northwind,
   the Billing Squad, the UBB pilot, INC-214). `samples/sources/` mirrors
-  `~/sources/` (immutable raw Slack + calendar); `samples/brain/` mirrors
-  `~/brain/` (the synthesized layer, primary index target).
+  `~/chief-of-staff/sources/` (immutable raw Slack + calendar); `samples/brain/` mirrors
+  `~/chief-of-staff/brain/` (the synthesized layer, primary index target).
 - **Questions:** `questions.md` — ~15 Q/A with expected answers and the evidence
   file(s) that must be retrieved.
 
@@ -17,21 +17,21 @@ system is built on sand.
 ## How to run it
 
 You can point QMD straight at `samples/`, or copy the samples into the real
-`~/sources` / `~/brain` layout. The copy path most closely mirrors how the real
+`~/chief-of-staff/sources` / `~/chief-of-staff/brain` layout. The copy path most closely mirrors how the real
 system runs.
 
 ### Option A — copy into the real layout (recommended, matches production)
 
 ```bash
 # from the repo root
-cp -R samples/brain/*   ~/brain/      # synthesized layer (PRIMARY index)
-cp -R samples/sources/* ~/sources/    # immutable raw (secondary index)
+cp -R samples/brain/*   ~/chief-of-staff/brain/      # synthesized layer (PRIMARY index)
+cp -R samples/sources/* ~/chief-of-staff/sources/    # immutable raw (secondary index)
 
 # build the two QMD collections + embeddings + MCP daemon
 scripts/qmd_setup.sh                  # see docs/SETUP.md if this isn't wired yet
 ```
 
-> Heads up: this writes into `~/brain` and `~/sources`. If you already have real
+> Heads up: this writes into `~/chief-of-staff/brain` and `~/chief-of-staff/sources`. If you already have real
 > data there, use Option B against a throwaway dir instead.
 
 ### Option B — index the samples in place

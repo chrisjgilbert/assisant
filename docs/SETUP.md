@@ -12,7 +12,7 @@ Throughout, `REPO` means the path to this repo (e.g. `~/code/assisant`). The bra
 and raw layers live **outside** the repo, in your home directory.
 
 > **Order matters:** bootstrap the brain *before* setting up QMD — `qmd_setup`
-> indexes `~/brain` and `~/sources`, which `bootstrap_brain.sh` creates.
+> indexes `~/chief-of-staff/brain` and `~/chief-of-staff/sources`, which `bootstrap_brain.sh` creates.
 
 ---
 
@@ -25,9 +25,9 @@ before going further.
 
 ```sh
 cd "$REPO"
-./scripts/bootstrap_brain.sh                 # create ~/brain & ~/sources
-cp -R samples/brain/*   ~/brain/             # load the sample synthesized brain
-cp -R samples/sources/* ~/sources/           # load the sample raw sources
+./scripts/bootstrap_brain.sh                 # create ~/chief-of-staff/brain & ~/chief-of-staff/sources
+cp -R samples/brain/*   ~/chief-of-staff/brain/             # load the sample synthesized brain
+cp -R samples/sources/* ~/chief-of-staff/sources/           # load the sample raw sources
 ./scripts/qmd_setup.sh                        # install + index + start daemon (verify on first run)
 ```
 
@@ -36,7 +36,7 @@ Then work through `benchmark/questions.md`, scoring in the table in
 once that passes is it worth doing the full connector setup below.
 
 > The sample brain is fictional (Northwind / Billing Squad). If you'd rather not
-> mix it into a `~/brain` you'll use for real, run this against throwaway dirs:
+> mix it into a `~/chief-of-staff/brain` you'll use for real, run this against throwaway dirs:
 > `BRAIN_DIR=/tmp/brain SOURCES_DIR=/tmp/sources` in front of each command.
 
 ---
@@ -67,8 +67,8 @@ cd "$REPO"
 ./scripts/bootstrap_brain.sh    # (verify on first run)
 ```
 
-This creates `~/brain/` (with `goals/ context/ daily/ briefs/ config/ signals/`,
-plus `index.md`, `log.md`, `CLAUDE.md`) and `~/sources/` (with `slack/` and
+This creates `~/chief-of-staff/brain/` (with `goals/ context/ daily/ briefs/ config/ signals/`,
+plus `index.md`, `log.md`, `CLAUDE.md`) and `~/chief-of-staff/sources/` (with `slack/` and
 `calendar/`), and copies the markdown templates from `templates/` and the config
 template into place. It never overwrites existing files, so it's safe to re-run.
 Both directories are created **outside** this repo and are never committed.
@@ -91,19 +91,19 @@ the QMD MCP daemon. After it finishes, confirm the MCP tools are visible to Clau
 and note their exact names. (verify on first run)
 
 > QMD indexes the brain as the primary collection and raw sources as secondary.
-> Retrieval reads `~/brain/index.md` first; QMD search is the fallback.
+> Retrieval reads `~/chief-of-staff/brain/index.md` first; QMD search is the fallback.
 > Re-run `./scripts/qmd_setup.sh reindex` after each `ingest` so new synthesis is
 > searchable. `status` / `stop` manage the daemon.
 
 ---
 
-## (d) Populate `~/brain/config/sources.yml`
+## (d) Populate `~/chief-of-staff/brain/config/sources.yml`
 
 Copy the shipped template into the brain and edit it to list your real sources:
 
 ```sh
-cp "$REPO/config/sources.example.yml" ~/brain/config/sources.yml
-$EDITOR ~/brain/config/sources.yml
+cp "$REPO/config/sources.example.yml" ~/chief-of-staff/brain/config/sources.yml
+$EDITOR ~/chief-of-staff/brain/config/sources.yml
 ```
 
 Set a few Slack channels under `slack.channels.include`. **DMs and @-mentions are on
@@ -125,9 +125,9 @@ calendar:
   calendars: ["primary"]
 ```
 
-The populated `sources.yml` is **personal data** and lives only in `~/brain/`; the
+The populated `sources.yml` is **personal data** and lives only in `~/chief-of-staff/brain/`; the
 repo ships only `config/sources.example.yml`. New channel memberships are proposed
-into `~/brain/signals/new-channels.md`, never auto-added.
+into `~/chief-of-staff/brain/signals/new-channels.md`, never auto-added.
 
 ---
 
@@ -172,26 +172,26 @@ Run the onboarding interview **once**, up front, then run the daily loop each da
 Run the onboard skill.
 ```
 
-It interviews you and drafts `~/brain/goals/{company,team,personal}.md` plus
+It interviews you and drafts `~/chief-of-staff/brain/goals/{company,team,personal}.md` plus
 `weightings.md`. **Edit these yourself** — they are human-owned and the brief ranks
 against them. Ingestion never writes them.
 
 **Each day:**
 
 1. **pull** — fetch the configured window via the Cowork connectors and write
-   immutable raw to `~/sources/`. Slack stays read-only; new channel memberships
-   are appended to `~/brain/signals/new-channels.md` for your review.
+   immutable raw to `~/chief-of-staff/sources/`. Slack stays read-only; new channel memberships
+   are appended to `~/chief-of-staff/brain/signals/new-channels.md` for your review.
    ```
    Run the pull skill.
    ```
-2. **ingest** — synthesize the new raw into `~/brain/context/*`, update `index.md`
+2. **ingest** — synthesize the new raw into `~/chief-of-staff/brain/context/*`, update `index.md`
    and `log.md`, with every claim cited as `> source: <path> @ <date>`. May append
    proposals to `signals/recalibration.md`; never touches `goals/`.
    ```
    Run the ingest skill.
    ```
 3. **daily-brief** — produce the ranked brief over goals + `context/slack.md` +
-   today's calendar (QMD fallback) into `~/brain/briefs/YYYY-MM-DD.md`, a file
+   today's calendar (QMD fallback) into `~/chief-of-staff/brain/briefs/YYYY-MM-DD.md`, a file
    Cowork can present.
    ```
    Run the daily-brief skill.
@@ -230,8 +230,8 @@ questions. If it falls short, swap the embedder or lean harder on the curated
 
 | Layer | Location | Committed? |
 |---|---|---|
-| Raw sources (immutable) | `~/sources/` | No (outside repo) |
-| The brain (synthesis + goals) | `~/brain/` | No (outside repo) |
+| Raw sources (immutable) | `~/chief-of-staff/sources/` | No (outside repo) |
+| The brain (synthesis + goals) | `~/chief-of-staff/brain/` | No (outside repo) |
 | Behaviour (skills/scripts/templates) | this repo | Yes |
-| Populated config | `~/brain/config/sources.yml` | No |
+| Populated config | `~/chief-of-staff/brain/config/sources.yml` | No |
 | Config template | `config/sources.example.yml` | Yes |

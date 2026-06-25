@@ -1,9 +1,9 @@
 # sources.example.yml — TEMPLATE for the pull skill's source/channel selection.
 #
-# Your REAL, populated config lives at ~/brain/config/sources.yml — that file
+# Your REAL, populated config lives at ~/chief-of-staff/brain/config/sources.yml — that file
 # holds personal data (your channels, people, DMs) and is NOT committed. This
 # example ships in the repo as the schema to copy from. The bootstrap script
-# copies this to ~/brain/config/sources.yml on first run; you then edit it.
+# copies this to ~/chief-of-staff/brain/config/sources.yml on first run; you then edit it.
 #
 # Channels are edited here BY NAME for readability, but resolve to stable Slack
 # IDs internally (names change, IDs don't), so renames don't break your config.

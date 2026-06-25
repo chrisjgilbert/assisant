@@ -1,5 +1,5 @@
 <!--
-  TEMPLATE for ~/brain/daily/YYYY-MM-DD.md — your daily log.
+  TEMPLATE for ~/chief-of-staff/brain/daily/YYYY-MM-DD.md — your daily log.
 
   Two states, marked by the `status:` field below:
     - DRAFT     = assistant-generated (e.g. by a future draft-daily-log skill);

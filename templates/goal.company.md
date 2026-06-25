@@ -4,7 +4,7 @@
   HUMAN-OWNED. Ingestion never writes here; proposed changes go to
   signals/recalibration.md for you to review and apply by hand.
 
-  This file is copied into ~/brain/goals/company.md by the bootstrap script,
+  This file is copied into ~/chief-of-staff/brain/goals/company.md by the bootstrap script,
   then filled in during the onboard interview (or directly by you).
   Keep it concise — the daily brief ranks work against these goals, so vague
   goals make for vague prioritisation. Replace every <FILL IN ...> marker.

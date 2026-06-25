@@ -10,10 +10,10 @@ Sit down with the user and *interview* them — ask, listen, follow up — until
 understand their company goals, product-team goals, personal/career aims, and
 crucially their **prioritisation judgement** (the concrete trade-off rules that
 decide what beats what when time is scarce). Then draft
-`~/brain/goals/{company,team,personal}.md` and `~/brain/goals/weightings.md`
+`~/chief-of-staff/brain/goals/{company,team,personal}.md` and `~/chief-of-staff/brain/goals/weightings.md`
 from the repo templates, present them, and iterate WITH the user, who edits.
 
-This is the ONLY skill permitted to write under `~/brain/goals/`, and only
+This is the ONLY skill permitted to write under `~/chief-of-staff/brain/goals/`, and only
 collaboratively, as drafts the user reviews.
 
 ## Hard guardrails (read first)
@@ -23,9 +23,9 @@ collaboratively, as drafts the user reviews.
 - **Goals are HUMAN-OWNED.** You only *draft* the files from the interview and
   present them. The user edits and confirms. Mark every file HUMAN-OWNED in its
   header and state explicitly that ingestion never writes here.
-- **Writes are confined to:** `~/brain/goals/company.md`,
-  `~/brain/goals/team.md`, `~/brain/goals/personal.md`,
-  `~/brain/goals/weightings.md`, and a log line in `~/brain/log.md`. Nothing
+- **Writes are confined to:** `~/chief-of-staff/brain/goals/company.md`,
+  `~/chief-of-staff/brain/goals/team.md`, `~/chief-of-staff/brain/goals/personal.md`,
+  `~/chief-of-staff/brain/goals/weightings.md`, and a log line in `~/chief-of-staff/brain/log.md`. Nothing
   else. Never touch `context/`, `index.md`, `sources/`, or `signals/`.
 - **No confabulation.** Only write what the user told you. If a section is thin,
   leave a clearly-marked TODO for the user rather than inventing goals.
@@ -41,14 +41,14 @@ collaboratively, as drafts the user reviews.
   - `templates/goal.team.md`
   - `templates/goal.personal.md`
   - `templates/weightings.md`
-- Any existing `~/brain/goals/*` files — if re-running, read them first and treat
+- Any existing `~/chief-of-staff/brain/goals/*` files — if re-running, read them first and treat
   the interview as a *revision* of what's there, not a blank start.
 
 ## Procedure
 1. **Frame it.** Tell the user this is a short interview to capture their goals
    and how they prioritise, and that everything you draft is theirs to edit —
    nothing is auto-applied.
-2. **If re-onboarding,** read existing `~/brain/goals/*` and summarize them back:
+2. **If re-onboarding,** read existing `~/chief-of-staff/brain/goals/*` and summarize them back:
    "Here's what I have today — what's changed?" Interview around the deltas.
 3. **Interview — company goals.** What is the company trying to achieve this
    year/quarter? What does success look like? What would failure look like?
@@ -77,7 +77,7 @@ collaboratively, as drafts the user reviews.
 8. **Present + iterate.** Show the user each draft (or write them and point the
    user at the paths). Invite edits. Revise on request. Do NOT consider this done
    until the user signs off; remind them they can freely edit the files directly.
-9. **Log.** Append one line to `~/brain/log.md` (see format).
+9. **Log.** Append one line to `~/chief-of-staff/brain/log.md` (see format).
 
 ## Outputs it writes
 
@@ -91,7 +91,7 @@ last-reviewed: 2026-06-25
 ---
 > HUMAN-OWNED. Drafted via the `onboard` interview; the user edits this.
 > Ingestion NEVER writes here — drift is only ever *proposed* in
-> ~/brain/signals/recalibration.md for your review.
+> ~/chief-of-staff/brain/signals/recalibration.md for your review.
 ```
 
 ### weightings.md — concrete, ordered trade-off rules (not platitudes)
@@ -125,7 +125,7 @@ last-reviewed: 2026-06-25
 - New meetings without an agenda; status work that a doc could carry.
 ```
 
-### Log line — append to `~/brain/log.md`
+### Log line — append to `~/chief-of-staff/brain/log.md`
 ```markdown
 ## [2026-06-25] onboard | drafted goals/{company,team,personal}.md + weightings.md (user to edit)
 ```

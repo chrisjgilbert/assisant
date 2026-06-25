@@ -1,5 +1,5 @@
 <!--
-  STARTER for ~/brain/index.md — the content catalogue.
+  STARTER for ~/chief-of-staff/brain/index.md — the content catalogue.
 
   index.md is the curated catalogue of every page in the brain. It is read FIRST
   on every query (Karpathy: read the index before searching). QMD search is the
@@ -13,7 +13,7 @@
 
 # Brain Index
 
-This is the catalogue of everything in `~/brain`. Read it first on any query to
+This is the catalogue of everything in `~/chief-of-staff/brain`. Read it first on any query to
 find the right page; fall back to QMD search (brain primary, raw secondary) only
 if nothing here fits.
 

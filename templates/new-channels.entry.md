@@ -1,5 +1,5 @@
 <!--
-  TEMPLATE for ONE append-only entry in ~/brain/signals/new-channels.md.
+  TEMPLATE for ONE append-only entry in ~/chief-of-staff/brain/signals/new-channels.md.
 
   signals/new-channels.md is APPEND-ONLY. On each pull, the pull skill diffs the
   channels you're a MEMBER of against include ∪ ignore in config/sources.yml and

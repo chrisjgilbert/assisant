@@ -30,7 +30,7 @@ grounded in the brain, so you walk into every meeting prepared.
   briefing file. No new ingestion, connector, or guardrail surface.
 - Reuses existing people/project pages, slack context, goals, and the citation
   convention.
-- **Output:** one consolidated `~/brain/briefs/YYYY-MM-DD-meetings.md` (a section
+- **Output:** one consolidated `~/chief-of-staff/brain/briefs/YYYY-MM-DD-meetings.md` (a section
   per meeting) — one file for Cowork to present.
 - **Where in the loop:** last step of the morning routine —
   `pull → ingest → daily-brief → meeting-prep`. The daily brief can end with a
@@ -58,7 +58,7 @@ Raised and consciously deferred during the V1 design discussion.
 - **Harden the retrieval protocol.** Current skills treat QMD as a soft
   "fallback," which relies on the model *noticing* it didn't find something
   (unreliable). Stronger protocol: index-first, then an **always-run verify
-  search** (especially over `~/sources/`), plus a **no-citation-no-answer** rule
+  search** (especially over `~/chief-of-staff/sources/`), plus a **no-citation-no-answer** rule
   (if it can't cite, it must search; if search is empty, say "not in the data").
   Touches `query/SKILL.md`, `daily-brief/SKILL.md`, and `brain.CLAUDE.md`.
 - **Surface retrieval method in output.** Today citations show provenance (the

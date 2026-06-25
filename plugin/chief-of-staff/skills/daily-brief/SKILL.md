@@ -17,26 +17,26 @@ honest about staleness and missing data instead of confabulating.
   `index.md` → `goals/*` + `weightings.md` → `context/*` (esp. `context/slack.md`)
   → today's calendar raw → **then** QMD search for gaps. Do NOT start with QMD
   search.
-- **Writes are confined to:** `~/brain/briefs/YYYY-MM-DD.md` and a log line in
-  `~/brain/log.md`. Nothing else. **NEVER write `~/brain/goals/`**,
-  `context/`, `index.md`, or `~/sources/`.
+- **Writes are confined to:** `~/chief-of-staff/brain/briefs/YYYY-MM-DD.md` and a log line in
+  `~/chief-of-staff/brain/log.md`. Nothing else. **NEVER write `~/chief-of-staff/brain/goals/`**,
+  `context/`, `index.md`, or `~/chief-of-staff/sources/`.
 - **Grounding rule:** a priority with NO goal link AND NO source citation must
   not be ranked highly — list it low and flag it `(unverified)`.
-- **Citation form is exact:** `> source: <path under ~/sources> @ <YYYY-MM-DD>`.
+- **Citation form is exact:** `> source: <path under ~/chief-of-staff/sources> @ <YYYY-MM-DD>`.
 - **No confabulation.** If `context/slack.md` is stale or calendar raw is
   missing for today, SAY SO in the brief rather than inventing priorities.
 - **Regenerate fresh each day.** The brief is rebuilt from current state; old
   briefs are kept for audit, never edited.
 
 ## Inputs it reads (in this order)
-1. `~/brain/index.md` — the curated catalogue of pages + freshness dates. Start
+1. `~/chief-of-staff/brain/index.md` — the curated catalogue of pages + freshness dates. Start
    here to know what synthesis exists and how fresh it is.
-2. `~/brain/goals/company.md`, `team.md`, `personal.md`, and `weightings.md` —
+2. `~/chief-of-staff/brain/goals/company.md`, `team.md`, `personal.md`, and `weightings.md` —
    what to rank against and the trade-off rules to rank by.
-3. `~/brain/context/*`, especially `~/brain/context/slack.md` (rolling Slack
+3. `~/chief-of-staff/brain/context/*`, especially `~/chief-of-staff/brain/context/slack.md` (rolling Slack
    synthesis), plus any relevant `context/projects|people|topics/` pages the
    index points to.
-4. Today's calendar raw under `~/sources/calendar/` (the most recent / today's
+4. Today's calendar raw under `~/chief-of-staff/sources/calendar/` (the most recent / today's
    snapshot) — calendar is structured; consume it largely raw.
 5. **QMD search (fallback only):** if the curated brain leaves a gap, search the
    QMD MCP daemon — **brain collection first (primary), raw second (secondary)**
@@ -60,15 +60,15 @@ honest about staleness and missing data instead of confabulating.
    work-type is it, do override rules flip it, what's today's time pressure
    (calendar). Apply the grounding rule — anything with neither a goal link nor a
    citation drops to the bottom and is marked `(unverified)`.
-6. **Write the brief** to `~/brain/briefs/YYYY-MM-DD.md` in the layout below:
+6. **Write the brief** to `~/chief-of-staff/brain/briefs/YYYY-MM-DD.md` in the layout below:
    a short "context / what's changed" preamble, the ranked priorities (each:
    one-line action, WHY → goal/weighting, EVIDENCE → cited source), and a
    "watch-outs / open threads" section. Call out staleness/missing data honestly.
-7. **Log.** Append one line to `~/brain/log.md` (see format).
-8. **Hand off.** Tell the user the brief is at `~/brain/briefs/YYYY-MM-DD.md` so
+7. **Log.** Append one line to `~/chief-of-staff/brain/log.md` (see format).
+8. **Hand off.** Tell the user the brief is at `~/chief-of-staff/brain/briefs/YYYY-MM-DD.md` so
    Cowork can present it.
 
-## Output it writes — `~/brain/briefs/YYYY-MM-DD.md`
+## Output it writes — `~/chief-of-staff/brain/briefs/YYYY-MM-DD.md`
 ```markdown
 ---
 title: Daily brief
@@ -101,7 +101,7 @@ inputs: [index.md, goals/*, context/slack.md, calendar/2026-06-25.md]
 - Stale / missing data: <what, and why it matters>.
 ```
 
-### Log line — append to `~/brain/log.md`
+### Log line — append to `~/chief-of-staff/brain/log.md`
 ```markdown
 ## [2026-06-25] brief | 4 priorities
 ```
@@ -114,4 +114,4 @@ maps to weightings rule #1 → ranked first, cited to the Slack raw. A Friday
 roadmap commitment ranks second, cited to a project page's source. One vague
 "maybe look at the dashboard" idea has no goal/citation → listed last as
 `(unverified)`. You note the 2-day Slack staleness in the preamble, write
-`~/brain/briefs/2026-06-25.md`, and append `## [2026-06-25] brief | 4 priorities`.
+`~/chief-of-staff/brain/briefs/2026-06-25.md`, and append `## [2026-06-25] brief | 4 priorities`.

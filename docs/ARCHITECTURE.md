@@ -18,14 +18,14 @@ The system is built from three layers that are kept **strictly separate**. The
 separation is the whole point: it is what prevents the synthesis from quietly
 becoming stale-as-fact (see §3).
 
-### Layer 1 — Raw sources (`~/sources/`, outside the repo)
+### Layer 1 — Raw sources (`~/chief-of-staff/sources/`, outside the repo)
 
 Immutable, read-only snapshots of source data, written by the `pull` skill from
 Cowork connectors. Once a file lands here it is **never modified**. This is the
 analogue of Karpathy's "raw" layer.
 
 ```
-~/sources/
+~/chief-of-staff/sources/
   slack/     <channel|dm>/YYYY-MM-DD.json (+ rendered .md)
   calendar/  YYYY-MM-DD.md
   granola/  linear/    # later phases
@@ -35,13 +35,13 @@ Why immutable: connectors are mutable *systems of record* (a Slack channel today
 not the Slack channel of last week). A local snapshot pins each synthesis to a
 specific point in time, preserves provenance, and lets any page be re-derived.
 
-### Layer 2 — The brain (`~/brain/`, outside the repo)
+### Layer 2 — The brain (`~/chief-of-staff/brain/`, outside the repo)
 
 LLM-owned markdown: the compounding synthesis plus the human-owned goals it is
 ranked against. This is Karpathy's "wiki".
 
 ```
-~/brain/
+~/chief-of-staff/brain/
   CLAUDE.md            # schema/conventions for work inside the brain
   index.md             # catalogue of pages; read FIRST on query
   log.md               # append-only ingest log
@@ -69,35 +69,21 @@ The version-controlled skills, scripts, templates, and docs that operate on laye
 ## 2. Data flow
 
 ```
-  ┌─────────────────┐
-  │ Cowork connector│  Slack (read-only), Google Calendar
-  │  (OAuth, mutable│
-  │  system of      │
-  │  record)        │
-  └────────┬────────┘
-           │  pull skill: fetch configured window
-           ▼
-  ┌─────────────────────────────────────────────┐
-  │ RAW SNAPSHOT   ~/sources/   (IMMUTABLE)       │   ← provenance anchor
-  │ slack/<chan>/YYYY-MM-DD.json  calendar/...     │
-  └────────┬──────────────────────────────────────┘
-           │  ingest skill: synthesize, cite source @ date
-           ▼
-  ┌─────────────────────────────────────────────┐
-  │ SYNTHESIS   ~/brain/context/*   index.md  log │   ← compounding "wiki"
-  │ goals/ (human-owned) ranked against           │
-  └────────┬──────────────────────────────────────┘
-           │  qmd_setup.sh: index two collections
-           ▼
-  ┌─────────────────────────────────────────────┐
-  │ QMD INDEX   brain = PRIMARY, raw = SECONDARY  │   ← retrieval / fallback
-  └────────┬──────────────────────────────────────┘
-           │  daily-brief / query skills
-           ▼
-  ┌─────────────────────────────────────────────┐
-  │ BRIEF  ~/brain/briefs/YYYY-MM-DD.md           │   ← delivered as a file
-  │ QUERY answers                                  │
-  └───────────────────────────────────────────────┘
+  Cowork connector   Slack (read-only), Google Calendar   (OAuth, mutable system of record)
+        │  pull skill: fetch configured window
+        ▼
+  RAW SNAPSHOT   ~/chief-of-staff/sources/   (IMMUTABLE)                ← provenance anchor
+        slack/<chan>/YYYY-MM-DD.json   calendar/...
+        │  ingest skill: synthesize, cite source @ date
+        ▼
+  SYNTHESIS   ~/chief-of-staff/brain/context/*   index.md   log.md     ← compounding "wiki"
+        goals/ (human-owned) ranked against
+        │  qmd_setup.sh: index two collections
+        ▼
+  QMD INDEX   brain = PRIMARY, raw = SECONDARY                         ← retrieval / fallback
+        │  daily-brief / query skills
+        ▼
+  BRIEF  ~/chief-of-staff/brain/briefs/YYYY-MM-DD.md   + query answers ← delivered as a file
 ```
 
 The critical invariant: **connector → raw → synthesis**. The connector is the
@@ -116,11 +102,11 @@ are fresh, where they came from, or how to re-derive them.
 Two mechanisms defend against this:
 
 1. **Immutable raw snapshots.** Every synthesis is derived from files in
-   `~/sources/` that are pinned to a date and never change. Any page can be
+   `~/chief-of-staff/sources/` that are pinned to a date and never change. Any page can be
    regenerated from raw rather than hand-patched, so drift is correctable by
    re-derivation.
 2. **Per-claim provenance.** Every synthesized claim carries
-   `> source: <path under ~/sources> @ <YYYY-MM-DD>`. This makes freshness legible
+   `> source: <path under ~/chief-of-staff/sources> @ <YYYY-MM-DD>`. This makes freshness legible
    and makes it possible to audit or rebuild any assertion.
 
 The alternative — letting the Cowork connectors act as live-RAG (query everything,
@@ -128,7 +114,7 @@ synthesize on the fly, store nothing) — is easy and seductive precisely becaus
 connectors solve access so cleanly. But it deletes the raw layer, and with it
 provenance and re-derivation. The architecture exists to resist that pull. Phase 0
 of the build verifies, before anything else, that we can actually write what we pull
-to `~/sources/`.
+to `~/chief-of-staff/sources/`.
 
 ---
 
@@ -143,13 +129,14 @@ Claude through an MCP daemon. It indexes **two collections**:
   for drilling into specifics or verifying provenance.
 
 QMD is RAG, and Karpathy's caution is *don't lean on query-time RAG*. So the order
-of operations is: **read the curated `~/brain/index.md` first**, then the relevant
+of operations is: **read the curated `~/chief-of-staff/brain/index.md` first**, then the relevant
 `context/` pages; QMD search is the **fallback**, not the primary path. The curated
 index plus compounding synthesis is the product; search backstops it.
 
-Keeping raw at a separate trust level (a sibling directory and a separate
-collection) also means the system can reason about "synthesized claim" vs "raw
-source material" without conflating them.
+Keeping raw at a separate trust level (its own directory — `sources/` alongside
+`brain/` under `~/chief-of-staff/` — and a separate collection) also means the
+system can reason about "synthesized claim" vs "raw source material" without
+conflating them.
 
 ### QMD vs navigation-only retrieval (what QMD adds over Karpathy)
 
@@ -207,12 +194,12 @@ Everything ships as a skill first; sub-agents arrive only when fan-out is real.
 
 The system is built to *propose, not impose*, on everything the human owns:
 
-- **Goals.** `~/brain/goals/` is human-owned and read-only to ingestion. The system
-  may only append proposed recalibrations to `~/brain/signals/recalibration.md`;
+- **Goals.** `~/chief-of-staff/brain/goals/` is human-owned and read-only to ingestion. The system
+  may only append proposed recalibrations to `~/chief-of-staff/brain/signals/recalibration.md`;
   the human reviews and edits goals by hand.
 - **Channel discovery.** On each pull, the system diffs the channels you are a
   *member* of against `include ∪ ignore` and appends the delta (new memberships) to
-  `~/brain/signals/new-channels.md` with context and a suggested disposition. It
+  `~/chief-of-staff/brain/signals/new-channels.md` with context and a suggested disposition. It
   **never auto-subscribes** — you promote each to `include` or `ignore`.
 - **Drift.** Drift detection (later phase) is conservative and high-signal, and
   also writes only to `signals/recalibration.md` — never to goals.

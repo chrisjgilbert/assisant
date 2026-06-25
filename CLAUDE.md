@@ -10,39 +10,39 @@ This repo is **BEHAVIOUR ONLY**: skills, scripts, templates, docs, and config
 
 **Data does NOT live here.** It lives in two directories outside the repo:
 
-- `~/brain/` — LLM-owned markdown synthesis (the "brain"): `goals/`, `context/`,
+- `~/chief-of-staff/brain/` — LLM-owned markdown synthesis (the "brain"): `goals/`, `context/`,
   `daily/`, `briefs/`, `config/sources.yml`, `signals/`, `index.md`, `log.md`,
-  `CLAUDE.md`. The `~/brain/CLAUDE.md` governs work *inside the brain* and is
+  `CLAUDE.md`. The `~/chief-of-staff/brain/CLAUDE.md` governs work *inside the brain* and is
   distinct from this file.
-- `~/sources/` — immutable raw snapshots pulled from Cowork connectors
+- `~/chief-of-staff/sources/` — immutable raw snapshots pulled from Cowork connectors
   (`slack/`, `calendar/`).
 
 Never commit personal data into this repo. The populated `sources.yml` lives in
-`~/brain/config/`; this repo ships only `config/sources.example.yml`.
+`~/chief-of-staff/brain/config/`; this repo ships only `config/sources.example.yml`.
 
 ## The three layers (keep strictly separate)
 
-1. **Raw sources** (`~/sources/`) — immutable, read-only. Connectors write here;
+1. **Raw sources** (`~/chief-of-staff/sources/`) — immutable, read-only. Connectors write here;
    nothing edits these after they land.
-2. **The brain** (`~/brain/`) — LLM-owned synthesis derived from raw, with
+2. **The brain** (`~/chief-of-staff/brain/`) — LLM-owned synthesis derived from raw, with
    `goals/` being human-owned.
 3. **Behaviour** (this repo) — the skills/scripts/templates that operate on 1 → 2.
 
 ## Non-negotiable rules
 
-- **Never write `~/brain/goals/` from ingestion.** Goals are HUMAN-OWNED.
+- **Never write `~/chief-of-staff/brain/goals/` from ingestion.** Goals are HUMAN-OWNED.
   Ingestion may only *propose* changes by appending to
-  `~/brain/signals/recalibration.md`. The human reviews and edits goals.
+  `~/chief-of-staff/brain/signals/recalibration.md`. The human reviews and edits goals.
 - **Always snapshot raw before synthesis.** Connectors fetch → write immutable
-  raw to `~/sources/` → synthesize from raw. Connectors are mutable systems of
+  raw to `~/chief-of-staff/sources/` → synthesize from raw. Connectors are mutable systems of
   record; the local snapshot pins each synthesis to a point in time and preserves
   provenance + re-derivation. Connectors are NOT live-RAG.
-- **Cite every synthesized claim** with `> source: <path under ~/sources> @ <YYYY-MM-DD>`.
+- **Cite every synthesized claim** with `> source: <path under ~/chief-of-staff/sources> @ <YYYY-MM-DD>`.
 - **Slack connector is READ-ONLY.** Never call `send_message` or any write tool.
 - **Channel discovery proposes, never auto-subscribes.** New memberships go to
-  `~/brain/signals/new-channels.md` for human review — never auto-added to
+  `~/chief-of-staff/brain/signals/new-channels.md` for human review — never auto-added to
   `include`.
-- **Retrieval = QMD.** Read `~/brain/index.md` first (curated catalogue); QMD
+- **Retrieval = QMD.** Read `~/chief-of-staff/brain/index.md` first (curated catalogue); QMD
   search (brain primary, raw secondary) is the fallback, not the first move.
 
 ## Skills (under `plugin/chief-of-staff/skills/`)
@@ -50,16 +50,16 @@ Never commit personal data into this repo. The populated `sources.yml` lives in
 V1 vertical slice (Slack + Google Calendar):
 
 - **pull/** — one generic, source-parameterized skill. Reads
-  `~/brain/config/sources.yml`, fetches the configured window via Cowork
-  connectors, and writes immutable raw to `~/sources/`. Appends new channel
+  `~/chief-of-staff/brain/config/sources.yml`, fetches the configured window via Cowork
+  connectors, and writes immutable raw to `~/chief-of-staff/sources/`. Appends new channel
   memberships to `signals/new-channels.md`. Read-only against connectors.
-- **ingest/** — synthesizes raw from `~/sources/` into `~/brain/context/*`,
+- **ingest/** — synthesizes raw from `~/chief-of-staff/sources/` into `~/chief-of-staff/brain/context/*`,
   updates `index.md` and `log.md`, and cites every claim. May append to
   `signals/recalibration.md`; never writes `goals/`.
 - **onboard/** — one-time onboarding interview that drafts
   `goals/{company,team,personal}.md` + `weightings.md` for the human to edit.
 - **daily-brief/** — produces a ranked brief over goals + `context/slack.md` +
-  today's calendar (QMD fallback) into `~/brain/briefs/YYYY-MM-DD.md`, a file
+  today's calendar (QMD fallback) into `~/chief-of-staff/brain/briefs/YYYY-MM-DD.md`, a file
   Cowork can present.
 - **query/** — answers ad-hoc questions over the brain ("what did I decide about
   X", "what have I been avoiding").

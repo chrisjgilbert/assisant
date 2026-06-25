@@ -5,9 +5,10 @@
 # This is part of the personal chief-of-staff assistant (Karpathy LLM-Wiki
 # pattern). It creates the two on-device data layers that live OUTSIDE this repo:
 #
-#   ~/brain/    (Layer 2) LLM-owned synthesis: goals, context, daily, briefs,
-#               config, signals, plus index.md / log.md / CLAUDE.md.
-#   ~/sources/  (Layer 1) immutable raw pulled from connectors (Slack/Calendar).
+#   ~/chief-of-staff/brain/    (Layer 2) LLM-owned synthesis: goals, context,
+#               daily, briefs, config, signals, plus index.md / log.md / CLAUDE.md.
+#   ~/chief-of-staff/sources/  (Layer 1) immutable raw pulled from connectors
+#               (Slack/Calendar).
 #
 # It seeds the brain from this repo's templates/ and config/ WITHOUT clobbering
 # anything that already exists, so it is safe to re-run.
@@ -16,8 +17,9 @@
 #   ./scripts/bootstrap_brain.sh
 #
 # Env overrides:
-#   BRAIN_DIR    (default: ~/brain)
-#   SOURCES_DIR  (default: ~/sources)
+#   COS_ROOT     (default: ~/chief-of-staff)   parent dir for both layers
+#   BRAIN_DIR    (default: $COS_ROOT/brain)
+#   SOURCES_DIR  (default: $COS_ROOT/sources)
 #
 # This script runs on the user's Mac (zsh/bash). It performs NO network calls,
 # NO git, and writes nothing inside this repo.
@@ -45,8 +47,11 @@ CONFIG_DIR="$REPO_ROOT/config"
 # --------------------------------------------------------------------------- #
 # Resolve target locations (env-overridable).
 # --------------------------------------------------------------------------- #
-BRAIN_DIR="${BRAIN_DIR:-$HOME/brain}"
-SOURCES_DIR="${SOURCES_DIR:-$HOME/sources}"
+# Both layers live under a single parent so the home dir stays tidy. Override
+# COS_ROOT to relocate the whole thing, or BRAIN_DIR/SOURCES_DIR individually.
+COS_ROOT="${COS_ROOT:-$HOME/chief-of-staff}"
+BRAIN_DIR="${BRAIN_DIR:-$COS_ROOT/brain}"
+SOURCES_DIR="${SOURCES_DIR:-$COS_ROOT/sources}"
 
 # --------------------------------------------------------------------------- #
 # Pretty output helpers + counters for the final summary.

@@ -27,8 +27,9 @@
 #   all       install -> init -> start  (also the default if no command given).
 #
 # Env overrides:
-#   BRAIN_DIR    (default: ~/brain)
-#   SOURCES_DIR  (default: ~/sources)
+#   COS_ROOT     (default: ~/chief-of-staff)   parent dir for both layers
+#   BRAIN_DIR    (default: $COS_ROOT/brain)
+#   SOURCES_DIR  (default: $COS_ROOT/sources)
 #   QMD_HTTP_PORT (default: 8181)   # the MCP HTTP daemon port
 #
 # This script runs on the user's Mac (zsh/bash).
@@ -43,8 +44,9 @@ set -euo pipefail
 # --------------------------------------------------------------------------- #
 # Config.
 # --------------------------------------------------------------------------- #
-BRAIN_DIR="${BRAIN_DIR:-$HOME/brain}"
-SOURCES_DIR="${SOURCES_DIR:-$HOME/sources}"
+COS_ROOT="${COS_ROOT:-$HOME/chief-of-staff}"
+BRAIN_DIR="${BRAIN_DIR:-$COS_ROOT/brain}"
+SOURCES_DIR="${SOURCES_DIR:-$COS_ROOT/sources}"
 QMD_HTTP_PORT="${QMD_HTTP_PORT:-8181}"
 QMD_HTTP_HOST="localhost"
 
