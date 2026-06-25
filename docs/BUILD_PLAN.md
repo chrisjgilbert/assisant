@@ -15,10 +15,12 @@ Status: **DRAFT FOR APPROVAL.** No system code written yet.
 
 | # | Decision |
 |---|---|
-| Slack | Pro/Business workspace. Want **private + public channels + DMs**. (Access path is the #1 risk — see below.) |
+| Slack | Pro/Business workspace. Want **private + public channels + DMs**. Pulled via the **Cowork Slack connector** (OAuth; reads everything you can see, incl. private + DMs), kept **read-only**. `slackdump` demoted to a fallback for bulk historical backfill. |
 | Granola | Defer. You believe there's an **API** worth using — we'll research it when Granola comes back in (not in the slice). |
 | Linear | Defer. Scope = your work team when it returns. |
-| Calendar | **Google Calendar.** |
+| Calendar | **Google Calendar**, via the Cowork Google Calendar connector. |
+| Ingestion mechanism | **Cowork connectors fetch → persist immutable raw to `~/sources/` → synthesize.** The connector is the *fetcher into the raw layer*, NOT live-RAG (preserves provenance, re-derivation, QMD indexing, offline decoupling). |
+| "Fully local" scope | Storage, embeddings, and the brain stay on-device. Connector content does pass through Claude (inherent to using Claude) — not a local-only data path. |
 | Raw location | No preference → using sibling **`~/sources/`** (hard immutability + separate QMD trust level). |
 | Privacy | **Fully local**, incl. embeddings (QMD's local EmbeddingGemma). |
 | Cadence | **Manual** in Claude Code to start. |
@@ -37,24 +39,25 @@ per-claim provenance is the fix for stale-as-fact; human-owned goals
 
 **Key risks, re-ranked for the slice:**
 
-1. **Slack access is now the #1 gate.** On Pro/Business, official export is
-   *public channels only*; private channels + DMs need Business+ **admin** or
-   the Discovery API. The individual path is a **user-token tool**
-   (`rusq/slackdump` — private channels + DMs, no admin needed, via `xoxc/xoxd`
-   session tokens or a legacy `xoxp`). Two unknowns to clear *before* building
-   synthesis: (a) can you mint/obtain such a token on your workspace, and
-   (b) is automated export within your employer's **workspace policy**? This is
-   Phase 0's first job. If it fails, we pivot the slice to Calendar+Granola.
-2. **QMD is RAG; Karpathy says don't lean on query-time RAG.** Same resolution
-   as v1: QMD indexes the **brain (synthesis) as primary**, raw as secondary;
-   the brief reads curated `index.md` + context pages first, search is the
-   fallback.
+1. **Don't let the connector become live-RAG.** Using the Cowork Slack/Calendar
+   connectors solves access (OAuth, reads private + DMs as you, no tokens). The
+   risk is the *easy* path — querying Slack fresh each time and synthesizing on
+   the fly — which quietly deletes the immutable-raw layer and with it
+   provenance and re-derivation. **Rule: connector fetches → write immutable raw
+   to `~/sources/` → synthesize from raw.** Phase 0 verifies the connectors can
+   read a private channel + a DM + calendar events, read-only.
+2. **QMD is RAG; Karpathy says don't lean on query-time RAG.** QMD indexes the
+   **brain (synthesis) as primary**, raw as secondary; the brief reads curated
+   `index.md` + context pages first, search is the fallback.
 3. **Slack is high-volume / low-signal** — which is exactly why pairing it with
    **Calendar** (low-volume, structured) in the slice is smart: calendar grounds
    the brief while Slack synthesis is being tuned.
 4. **Brain goes stale** — defend from day one: `source @ date` citations,
    freshness metadata, regenerate-from-raw over hand-patching. Lint is the
    later backstop.
+5. **Connector has write tools.** The Slack connector can post messages/create
+   channels. Keep it **read-only** for this system (allow read, block
+   `send_message`) so a scheduled/automated run can never post on your behalf.
 
 ---
 
@@ -88,11 +91,12 @@ per-claim provenance is the fix for stale-as-fact; human-owned goals
 README.md   CLAUDE.md
 docs/        BUILD_PLAN.md  ARCHITECTURE.md  SETUP.md
 plugin/chief-of-staff/skills/
-  onboard/  ingest/  daily-brief/  query/         # slice
-  drift-detect/  draft-daily-log/  lint/          # later
+  pull/  ingest/  onboard/  daily-brief/  query/   # slice (pull = connector→raw)
+  drift-detect/  draft-daily-log/  lint/           # later
 scripts/
-  qmd_setup.*   ingest_slack.*   ingest_gcal.*    # slice
-  ingest_granola.*  ingest_linear.*               # later
+  qmd_setup.*                                      # slice (only script needed)
+  ingest_slack_backfill.*                          # optional slackdump fallback
+  ingest_granola.*  ingest_linear.*                # later
 templates/   goal.*  weightings.md  context.page.md  daily.log.md  brief.md
 ```
 
@@ -108,7 +112,8 @@ with you in the loop. Sub-agent = isolation/parallel fan-out, added later only.*
 
 | Component | Type | Why |
 |---|---|---|
-| Slack export, GCal export, QMD index/embed/daemon | **Script** | Deterministic, idempotent, no judgement, no LLM. Write only to `~/sources/`. |
+| QMD index/embed/daemon | **Script** | Deterministic, idempotent, no judgement, no LLM. The only script in the slice. |
+| Slack / GCal pull → raw | **Skill** | Connector tools are LLM-invoked, not shell-invoked. A thin "fetch scoped window → write immutable raw to `~/sources/`" skill, kept read-only. |
 | Onboarding interview | **Skill** | Needs judgement + live dialogue. Never a sub-agent (can't interview you). |
 | Ingest → synthesis | **Skill** | Core Karpathy "ingest"; judgement-heavy; you steer takeaways. |
 | Daily brief / query | **Skill** | The product; ranked reasoning + answers, filed back as pages. |
@@ -120,18 +125,18 @@ Everything ships as a skill first; sub-agents arrive only when fan-out is real.
 
 ## 4. Phase-by-phase plan (vertical slice)
 
-### Phase 0 — De-risk Slack access + foundations + prove QMD
-- **Goal:** clear the two load-bearing unknowns before building anything.
+### Phase 0 — Verify connectors + foundations + prove QMD
+- **Goal:** clear the load-bearing unknowns before building anything.
 - **Build:**
-  - **Slack access spike:** confirm we can pull a **private channel + a DM** to
-    `~/sources/slack/` via `slackdump` (token + workspace-policy check). This is
-    the gate.
+  - **Connector spike:** confirm the Cowork **Slack** connector can read a
+    **private channel + a DM**, and the **Google Calendar** connector can read
+    events — read-only — and that we can write what we pull to `~/sources/`.
   - `~/sources/` + `~/brain/` skeletons; `qmd_setup` (two collections, `embed`,
     MCP daemon wired into Claude Code); confirm real MCP tool names.
   - ~15 Slack/calendar-shaped sample files + ~15 benchmark Q/A.
-- **DoD:** (a) real Slack private-channel + DM content lands in `~/sources/`;
-  (b) QMD returns the right source for ≥80% of benchmarks. **If (a) fails →
-  Decision Point 1.**
+- **DoD:** (a) real private-channel + DM + calendar content lands in
+  `~/sources/` via the connectors; (b) QMD returns the right source for ≥80% of
+  benchmarks. **If (a) fails → Decision Point 1.**
 
 ### Phase 1 — Onboarding interview → goals
 - **Goal:** opinionated goals + your real prioritisation judgement (the brief
@@ -144,10 +149,11 @@ Everything ships as a skill first; sub-agents arrive only when fan-out is real.
 ### Phase 2 — Slice ingestion (Slack + Google Calendar)
 - **Goal:** real Slack + calendar flowing in, synthesized with provenance, raw
   kept.
-- **Build:** `ingest_slack` (private+public+DMs, scoped channels, last ~14d) and
-  `ingest_gcal` scripts → `~/sources/`; `ingest` skill → `context/slack.md`
-  (rolling) + relevant context pages, updates `index.md`/`log.md`, cites raw.
-  Calendar is mostly structured — fed largely raw into the brief.
+- **Build:** a connector-driven **pull skill** (Slack: private+public+DMs,
+  scoped channels, last ~14d; GCal: events) that writes immutable raw to
+  `~/sources/`; then the `ingest` skill → `context/slack.md` (rolling) +
+  relevant context pages, updates `index.md`/`log.md`, cites raw. Calendar is
+  mostly structured — fed largely raw into the brief.
 - **DoD:** an ingest of real data yields a context page whose every claim cites
   raw; index/log update.
 
@@ -174,10 +180,11 @@ Everything ships as a skill first; sub-agents arrive only when fan-out is real.
 
 ## 5. Decision points
 
-1. **End of Phase 0 — Can we get Slack data, and is QMD good enough?**
-   Fork: (a) proceed with the Slack+Calendar slice; (b) Slack token/policy
-   blocked → pivot slice to **Calendar + Granola**, or pursue admin/Enterprise
-   export; (c) QMD weak → swap embedder / lean on the curated index.
+1. **End of Phase 0 — Do the connectors read what we need, and is QMD good
+   enough?** Fork: (a) proceed with the Slack+Calendar slice; (b) connector
+   can't reach private channels/DMs → fall back to `slackdump`, or pivot slice
+   to **Calendar + Granola**; (c) QMD weak → swap embedder / lean on the curated
+   index.
 2. **End of Phase 3 — Is the prioritisation loop actually useful on real
    Slack+calendar?** *(main go/no-go)* Fork: (a) broaden connectors (P4+);
    (b) data's fine but judgement is off → iterate `weightings.md`/brief skill;
@@ -193,9 +200,9 @@ Everything ships as a skill first; sub-agents arrive only when fan-out is real.
 1. **Slack slice = Slack + Google Calendar** (my recommendation), or Slack
    only?
 2. **Backlog/retention defaults** (last ~14d ingest, keep all raw) — OK?
-3. **Slack token + policy:** are you able to create/obtain a user token for your
-   workspace, and is automated export of your own messages within your
-   employer's policy? (I won't pull anything until you confirm.)
+3. **Connectors enabled?** Confirm the Cowork **Slack** and **Google Calendar**
+   connectors are connected in your Claude Desktop. (I won't pull anything until
+   you confirm.)
 4. **Which Slack channels** (plus DMs/mentions) are in scope for the slice?
 
 Answer these and I'll begin Phase 0.
