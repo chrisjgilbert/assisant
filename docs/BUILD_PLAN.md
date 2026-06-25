@@ -16,10 +16,11 @@ Status: **DRAFT FOR APPROVAL.** No system code written yet.
 | # | Decision |
 |---|---|
 | Slack | Pro/Business workspace. Want **private + public channels + DMs**. Pulled via the **Cowork Slack connector** (OAuth; reads everything you can see, incl. private + DMs), kept **read-only**. `slackdump` demoted to a fallback for bulk historical backfill. |
-| Granola | Defer. You believe there's an **API** worth using — we'll research it when Granola comes back in (not in the slice). |
-| Linear | Defer. Scope = your work team when it returns. |
+| Granola | Defer to a later phase, but via the **Cowork Granola connector** (not the local cache / a bespoke API). |
+| Linear | Defer to a later phase, via the **Cowork Linear connector**. Scope = your work team. |
+| All sources | **Everything comes through Cowork connectors.** No bespoke export scripts — ingestion is one generic, source-parameterized **pull skill**. |
 | Calendar | **Google Calendar**, via the Cowork Google Calendar connector. |
-| Ingestion mechanism | **Cowork connectors fetch → persist immutable raw to `~/sources/` → synthesize.** The connector is the *fetcher into the raw layer*, NOT live-RAG (preserves provenance, re-derivation, QMD indexing, offline decoupling). |
+| Ingestion mechanism | **Cowork connectors fetch → persist immutable raw to `~/sources/` → synthesize.** The connector is the *fetcher into the raw layer*, NOT live-RAG. With every source connector-based and *mutable*, the local raw snapshot pins what each synthesis was derived from at a point in time — the one guardrail keeping this from collapsing into connector-RAG. |
 | "Fully local" scope | Storage, embeddings, and the brain stay on-device. Connector content does pass through Claude (inherent to using Claude) — not a local-only data path. |
 | Raw location | No preference → using sibling **`~/sources/`** (hard immutability + separate QMD trust level). |
 | Privacy | **Fully local**, incl. embeddings (QMD's local EmbeddingGemma). |
@@ -39,13 +40,14 @@ per-claim provenance is the fix for stale-as-fact; human-owned goals
 
 **Key risks, re-ranked for the slice:**
 
-1. **Don't let the connector become live-RAG.** Using the Cowork Slack/Calendar
-   connectors solves access (OAuth, reads private + DMs as you, no tokens). The
-   risk is the *easy* path — querying Slack fresh each time and synthesizing on
-   the fly — which quietly deletes the immutable-raw layer and with it
-   provenance and re-derivation. **Rule: connector fetches → write immutable raw
-   to `~/sources/` → synthesize from raw.** Phase 0 verifies the connectors can
-   read a private channel + a DM + calendar events, read-only.
+1. **Don't let connectors become live-RAG.** Every source is a Cowork connector,
+   which solves access entirely (OAuth, reads as you, no tokens) — but makes the
+   *easy* path (live-query everything, synthesize on the fly, store nothing) very
+   tempting, and that path quietly deletes the immutable-raw layer along with
+   provenance and re-derivation. Because connectors are *systems of record that
+   mutate*, the local raw snapshot pins each synthesis to a point in time.
+   **Rule: connector fetches → write immutable raw to `~/sources/` → synthesize
+   from raw.** Phase 0 verifies read access, read-only.
 2. **QMD is RAG; Karpathy says don't lean on query-time RAG.** QMD indexes the
    **brain (synthesis) as primary**, raw as secondary; the brief reads curated
    `index.md` + context pages first, search is the fallback.
@@ -94,9 +96,9 @@ plugin/chief-of-staff/skills/
   pull/  ingest/  onboard/  daily-brief/  query/   # slice (pull = connector→raw)
   drift-detect/  draft-daily-log/  lint/           # later
 scripts/
-  qmd_setup.*                                      # slice (only script needed)
-  ingest_slack_backfill.*                          # optional slackdump fallback
-  ingest_granola.*  ingest_linear.*                # later
+  qmd_setup.*                                      # the only script in the system
+config/
+  sources.yml                                      # per-connector pull config (channels, windows)
 templates/   goal.*  weightings.md  context.page.md  daily.log.md  brief.md
 ```
 
@@ -112,8 +114,8 @@ with you in the loop. Sub-agent = isolation/parallel fan-out, added later only.*
 
 | Component | Type | Why |
 |---|---|---|
-| QMD index/embed/daemon | **Script** | Deterministic, idempotent, no judgement, no LLM. The only script in the slice. |
-| Slack / GCal pull → raw | **Skill** | Connector tools are LLM-invoked, not shell-invoked. A thin "fetch scoped window → write immutable raw to `~/sources/`" skill, kept read-only. |
+| QMD index/embed/daemon | **Script** | Deterministic, idempotent, no judgement, no LLM. The only script in the whole system. |
+| Connector pull → raw (Slack/GCal/Granola/Linear) | **Skill (one, generic)** | Connector tools are LLM-invoked, not shell-invoked. A single source-parameterized "fetch scoped window → write immutable raw to `~/sources/`" skill, kept read-only. Adding a source = config, not a new script. |
 | Onboarding interview | **Skill** | Needs judgement + live dialogue. Never a sub-agent (can't interview you). |
 | Ingest → synthesis | **Skill** | Core Karpathy "ingest"; judgement-heavy; you steer takeaways. |
 | Daily brief / query | **Skill** | The product; ranked reasoning + answers, filed back as pages. |
@@ -168,8 +170,8 @@ Everything ships as a skill first; sub-agents arrive only when fan-out is real.
   and your edits are minor. **This is the main go/no-go (Decision Point 2).**
 
 ### Later phases (after the slice proves out)
-- **P4** Add Granola (research its API first) + Linear adapters → broaden
-  ingestion.
+- **P4** Add Granola + Linear — now just new entries in `config/sources.yml`
+  pointing the generic pull skill at those connectors. Cheap by design.
 - **P5** Drift detection → `signals/recalibration.md` (structured, conservative,
   high-signal sources only; never writes goals).
 - **P6** Daily-log automation fallback (calendar + Linear + Granola draft).
