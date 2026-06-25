@@ -77,7 +77,9 @@ per-claim provenance is the fix for stale-as-fact; human-owned goals
     projects/ people/ topics/
   daily/   YYYY-MM-DD.md     # daily log (human / assistant-drafted)
   briefs/  YYYY-MM-DD.md     # generated brief (kept; Cowork presents this file)
+  config/  sources.yml       # YOUR populated source/channel selection (data, local)
   signals/ recalibration.md  # append-only drift flags (human reviews)
+           new-channels.md   # append-only channel-discovery queue (human reviews)
 ```
 
 ### `~/sources/` (immutable raw, sibling, outside repo)
@@ -98,12 +100,47 @@ plugin/chief-of-staff/skills/
 scripts/
   qmd_setup.*                                      # the only script in the system
 config/
-  sources.yml                                      # per-connector pull config (channels, windows)
+  sources.example.yml                              # TEMPLATE only (real config lives in ~/brain/config/)
 templates/   goal.*  weightings.md  context.page.md  daily.log.md  brief.md
 ```
 
 Citation convention everywhere:
 `> source: slack/eng-team/2026-06-20.json @ 2026-06-20`.
+
+### 2d. Source selection & channel discovery
+
+`~/brain/config/sources.yml` drives the generic pull skill. Three buckets per
+source: `include`, `ignore`, and an auto-populated review queue.
+
+```yaml
+slack:
+  window_days: 14
+  channels:
+    include:
+      - "#eng-product"
+      - { name: "#incidents", priority: high, window_days: 30 }  # per-channel overrides
+    ignore: ["#random", "#watercooler"]
+  dms: { include: true }        # all DMs (or scope to people: ["Alice", "Bob"])
+  mentions: true                # @-mentions of you anywhere, incl. unwatched channels
+  discovery: { enabled: true, queue: "signals/new-channels.md" }
+calendar:
+  window_days: 14
+  calendars: ["primary"]
+```
+
+**Discovery = new memberships, proposed not auto-added.** On each pull the skill
+lists the channels you're a *member* of and diffs against `include` ∪ `ignore`.
+The delta (channels you were added to / created since last run) is appended to
+`signals/new-channels.md` with context (name, topic, when joined, recent
+activity) + a suggested disposition. You promote each to `include`/`ignore`. It
+**never auto-includes** — the same propose-don't-write discipline as goal
+recalibration. Keying on *membership* (not all workspace channels) keeps this
+naturally low-noise.
+
+Conventions: channels resolve to **stable IDs** internally (names change, IDs
+don't) but you edit by name; the populated `sources.yml` lives in `~/brain/`
+(personal data, not pushed to GitHub) while the repo ships only
+`config/sources.example.yml`.
 
 ---
 
@@ -151,11 +188,12 @@ Everything ships as a skill first; sub-agents arrive only when fan-out is real.
 ### Phase 2 — Slice ingestion (Slack + Google Calendar)
 - **Goal:** real Slack + calendar flowing in, synthesized with provenance, raw
   kept.
-- **Build:** a connector-driven **pull skill** (Slack: private+public+DMs,
-  scoped channels, last ~14d; GCal: events) that writes immutable raw to
-  `~/sources/`; then the `ingest` skill → `context/slack.md` (rolling) +
-  relevant context pages, updates `index.md`/`log.md`, cites raw. Calendar is
-  mostly structured — fed largely raw into the brief.
+- **Build:** a connector-driven **pull skill** reading `~/brain/config/sources.yml`
+  (Slack: include-listed channels + DMs + mentions, last ~14d; GCal: events) that
+  writes immutable raw to `~/sources/` and appends new memberships to
+  `signals/new-channels.md`; then the `ingest` skill → `context/slack.md`
+  (rolling) + relevant context pages, updates `index.md`/`log.md`, cites raw.
+  Calendar is mostly structured — fed largely raw into the brief.
 - **DoD:** an ingest of real data yields a context page whose every claim cites
   raw; index/log update.
 
@@ -205,6 +243,8 @@ Everything ships as a skill first; sub-agents arrive only when fan-out is real.
 3. **Connectors enabled?** Confirm the Cowork **Slack** and **Google Calendar**
    connectors are connected in your Claude Desktop. (I won't pull anything until
    you confirm.)
-4. **Which Slack channels** (plus DMs/mentions) are in scope for the slice?
+4. **Which Slack channels** seed the `include` list for the slice? (DMs +
+   mentions on by default; new memberships auto-queued for your review — see
+   §2d. You can also just name them when we populate `sources.yml`.)
 
 Answer these and I'll begin Phase 0.
