@@ -75,22 +75,25 @@ assisant/
   config/
     sources.example.yml      # TEMPLATE; real config lives in ~/brain/config/
   templates/                 # goal / context / daily / brief markdown templates
-  benchmark/                 # sample sources + Q/A to verify QMD retrieval
+  samples/                   # fictional raw + synthesized brain for Phase 0 testing
+    sources/                 #   mirrors ~/sources/ (raw Slack + calendar)
+    brain/                   #   mirrors ~/brain/ (synthesized, cited)
+  benchmark/                 # 15 Q/A + scorecard to verify QMD retrieval on samples/
 ```
-
-(Some directories above are created by other parts of the build; this README
-documents the intended layout.)
 
 ## Quick start
 
 See **[docs/SETUP.md](docs/SETUP.md)** for the full walkthrough. In short:
 
-1. Connect the Slack and Google Calendar connectors in Cowork (read-only).
-2. Install QMD: `scripts/qmd_setup.sh`.
+1. **Validate retrieval first (Phase 0 gate):** `scripts/bootstrap_brain.sh`, copy
+   `samples/` into `~/brain` & `~/sources`, run `scripts/qmd_setup.sh`, then score
+   `benchmark/` (target ≥ 12/15). No connectors needed. If it fails, stop here.
+2. Connect the Slack and Google Calendar connectors in Cowork (read-only).
 3. Bootstrap the brain: `scripts/bootstrap_brain.sh` (creates `~/brain` & `~/sources`).
-4. Populate `~/brain/config/sources.yml` from `config/sources.example.yml`.
-5. Enable the plugin (or symlink skills into `~/.claude/skills/`).
-6. Run the onboarding interview once, then run the daily loop.
+4. Install/index QMD: `scripts/qmd_setup.sh` (run **after** bootstrap — it indexes those dirs).
+5. Populate `~/brain/config/sources.yml` from `config/sources.example.yml`.
+6. Enable the plugin (or symlink skills into `~/.claude/skills/`).
+7. Run the onboarding interview once, then run the daily loop.
 
 ## How it works — the daily loop
 

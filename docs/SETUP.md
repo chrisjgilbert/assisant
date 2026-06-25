@@ -11,6 +11,34 @@ retrieval → daily brief) running on macOS. For the why behind each piece, see
 Throughout, `REPO` means the path to this repo (e.g. `~/code/assisant`). The brain
 and raw layers live **outside** the repo, in your home directory.
 
+> **Order matters:** bootstrap the brain *before* setting up QMD — `qmd_setup`
+> indexes `~/brain` and `~/sources`, which `bootstrap_brain.sh` creates.
+
+---
+
+## Fast path: validate retrieval first (recommended)
+
+Phase 0 of the plan is a gate: **prove QMD retrieval is good enough before wiring
+up connectors.** You can do this in minutes on the shipped sample data — no Slack
+or Calendar needed. If this fails, stop and fix retrieval (Decision Point 1)
+before going further.
+
+```sh
+cd "$REPO"
+./scripts/bootstrap_brain.sh                 # create ~/brain & ~/sources
+cp -R samples/brain/*   ~/brain/             # load the sample synthesized brain
+cp -R samples/sources/* ~/sources/           # load the sample raw sources
+./scripts/qmd_setup.sh                        # install + index + start daemon (verify on first run)
+```
+
+Then work through `benchmark/questions.md`, scoring in the table in
+[`benchmark/README.md`](../benchmark/README.md). **Target: ≥ 12/15 (80%).** Only
+once that passes is it worth doing the full connector setup below.
+
+> The sample brain is fictional (Northwind / Billing Squad). If you'd rather not
+> mix it into a `~/brain` you'll use for real, run this against throwaway dirs:
+> `BRAIN_DIR=/tmp/brain SOURCES_DIR=/tmp/sources` in front of each command.
+
 ---
 
 ## (a) Prerequisites
@@ -29,41 +57,43 @@ and raw layers live **outside** the repo, in your home directory.
 
 ---
 
-## (b) Install and configure QMD
-
-QMD is the local markdown search engine + MCP daemon used for retrieval. A setup
-script is provided.
-
-```sh
-cd "$REPO"
-./scripts/qmd_setup.sh          # (verify on first run)
-```
-
-This should: install QMD, create **two collections** — `brain` (PRIMARY, your
-synthesis) and `sources` (SECONDARY, immutable raw) — build the local embeddings,
-and register the QMD MCP daemon with Claude Code. After it finishes, confirm the MCP
-tools are visible to Claude and note their exact names. (verify on first run)
-
-> QMD indexes the brain as the primary collection and raw sources as secondary.
-> Retrieval reads `~/brain/index.md` first; QMD search is the fallback.
-
----
-
-## (c) Bootstrap the brain
+## (b) Bootstrap the brain
 
 Create the brain and raw directories and seed them from this repo's templates and
-config.
+config. **Do this before QMD** — QMD indexes these directories.
 
 ```sh
 cd "$REPO"
 ./scripts/bootstrap_brain.sh    # (verify on first run)
 ```
 
-This should create `~/brain/` (with `goals/ context/ daily/ briefs/ config/
-signals/`, plus `index.md`, `log.md`, `CLAUDE.md`) and `~/sources/` (with `slack/`
-and `calendar/`), and copy the markdown templates from `templates/` and the config
-template into place. Both directories are created **outside** this repo and are
-never committed.
+This creates `~/brain/` (with `goals/ context/ daily/ briefs/ config/ signals/`,
+plus `index.md`, `log.md`, `CLAUDE.md`) and `~/sources/` (with `slack/` and
+`calendar/`), and copies the markdown templates from `templates/` and the config
+template into place. It never overwrites existing files, so it's safe to re-run.
+Both directories are created **outside** this repo and are never committed.
+
+---
+
+## (c) Install and configure QMD
+
+QMD is the local markdown search engine + MCP daemon used for retrieval. The setup
+script with no argument runs `install → init → start`.
+
+```sh
+cd "$REPO"
+./scripts/qmd_setup.sh          # = install + init + start (verify on first run)
+```
+
+This installs QMD, creates **two collections** — `brain` (PRIMARY, your synthesis)
+and `sources` (SECONDARY, immutable raw) — builds the local embeddings, and starts
+the QMD MCP daemon. After it finishes, confirm the MCP tools are visible to Claude
+and note their exact names. (verify on first run)
+
+> QMD indexes the brain as the primary collection and raw sources as secondary.
+> Retrieval reads `~/brain/index.md` first; QMD search is the fallback.
+> Re-run `./scripts/qmd_setup.sh reindex` after each `ingest` so new synthesis is
+> searchable. `status` / `stop` manage the daemon.
 
 ---
 
@@ -179,18 +209,20 @@ V1 cadence is **manual** — you run these in Claude Code yourself.
 
 ## (g) Verify QMD retrieval
 
-The repo ships a `benchmark/` directory with sample source files and benchmark Q/A
-to check that retrieval actually returns the right source.
+If you ran the **Fast path** above, you've already done this. Otherwise: the repo
+ships sample data in `samples/` (raw + a synthesized brain) and a benchmark in
+`benchmark/` to check that retrieval returns the right source.
 
 ```sh
 cd "$REPO"
-ls benchmark/                  # sample sources + Q/A
-# Run the benchmark per its README/runner: (verify on first run)
+cat benchmark/questions.md     # 15 questions + expected answers & evidence files
+cat benchmark/README.md        # how to run + a scorecard to fill in
 ```
 
-Target: QMD returns the correct source for **≥80%** of the benchmark questions. If
-it falls short, swap the embedder or lean harder on the curated `index.md` (see
-Decision Point 1 in [BUILD_PLAN.md](BUILD_PLAN.md)).
+Run each question via `qmd query "<question>"` or the `query` skill, and record
+which source QMD surfaced. Target: the correct source for **≥ 12/15 (80%)** of the
+questions. If it falls short, swap the embedder or lean harder on the curated
+`index.md` (see Decision Point 1 in [BUILD_PLAN.md](BUILD_PLAN.md)).
 
 ---
 
