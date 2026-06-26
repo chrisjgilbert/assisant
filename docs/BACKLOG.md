@@ -72,6 +72,40 @@ Raised and consciously deferred during the V1 design discussion.
 
 ---
 
+## Productisation target — a polished, self-install plugin
+
+**Decision:** the ceiling for "others can use it" is a **polished, local-first
+open-source plugin**. NOT pursuing a hosted SaaS or (for now) a desktop app.
+Rationale: the whole trust model is local + private + human-owned goals; going
+hosted would make us a processor of people's work Slack/calendar/transcripts and
+pull in SOC2/DPA/retention burden for little benefit. Local-first keeps the value
+and sidesteps the compliance surface.
+
+Gate: only worth doing once the daily loop has proven useful for the author.
+
+Scope when pursued (P1 only):
+- **Package & distribute** the `chief-of-staff` plugin to the marketplace; clean
+  versioning and install path (the layer separation already makes this clean).
+- **Reduce setup friction** — bundle/automate QMD setup so it isn't a manual
+  multi-step terminal chore.
+- **Generalise onboarding** beyond "product engineer" — role-agnostic interview
+  or **role packs** (PM, founder, eng manager, sales). The interview is the soul
+  of the product; goals/weightings are what make briefs good.
+- **Cold-start value** — deliver a useful first brief from calendar + Slack alone,
+  before goals/synthesis are rich, so day-1 users don't churn.
+- **Trust features become table stakes** — provenance surfaced, freshness UX, and
+  the lint pass (pull forward from "later") to fight confident-but-stale synthesis
+  in the hands of less-careful users.
+
+Explicitly out of scope: hosted/multi-tenant, team/manager mode (shared brain),
+your-own-OAuth connectors. Recorded in case that changes, but not the plan.
+
+Platform note: this rides on Claude + Cowork (paid). Defensibility is the
+synthesis methodology + personalisation + connector breadth, not the plumbing;
+accept the platform dependency.
+
+---
+
 ## See also
 
 - [BUILD_PLAN.md](BUILD_PLAN.md) — approved plan; §4 "Later phases" covers
