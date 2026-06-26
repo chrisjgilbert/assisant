@@ -56,6 +56,7 @@ assisant/
     BUILD_PLAN.md            # the approved plan & decisions (source of record)
     ARCHITECTURE.md          # canonical architecture explanation
     SETUP.md                 # step-by-step V1 setup on a Mac
+    QMD.md                   # how QMD retrieval works (illustrative reference)
   plugin/chief-of-staff/
     skills/
       pull/                  # connector → immutable raw in ~/chief-of-staff/sources/
@@ -112,3 +113,4 @@ delivered as a markdown file that Cowork can present.
 - [docs/BUILD_PLAN.md](docs/BUILD_PLAN.md) — the approved plan and locked decisions.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — the architecture in depth.
 - [docs/SETUP.md](docs/SETUP.md) — getting V1 running on a Mac.
+- [docs/QMD.md](docs/QMD.md) — how QMD retrieval works (illustrative reference).
